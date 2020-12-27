@@ -18,3 +18,5 @@ Imports:
     torchvision
 Suggests: 
     testthat
+URL: https://github.com/Athospd/guessthecorrelation
+BugReports: https://github.com/Athospd/guessthecorrelation/issues
