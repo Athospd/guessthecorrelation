@@ -16,8 +16,12 @@ RoxygenNote: 7.1.1
 Imports: 
     pins,
     torchvision,
-    magick
+    magick,
+    magrittr
 Suggests: 
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
 URL: https://github.com/Athospd/guessthecorrelation
 BugReports: https://github.com/Athospd/guessthecorrelation/issues
+VignetteBuilder: knitr

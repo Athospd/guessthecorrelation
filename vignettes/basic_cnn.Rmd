@@ -1,0 +1,25 @@
+---
+title: "Basic CNN Model"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Basic CNN Model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(guessthecorrelation)
+```
+
+```{r}
+train <- guess_the_correlation_dataset(root = "~/datasets", token = "kaggle.json", download = TRUE, split = "train")
+submition <- guess_the_correlation_dataset(root = "~/datasets", token = "kaggle.json", download = TRUE, split = "submition")
+```
+

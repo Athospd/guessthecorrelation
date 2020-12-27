@@ -30,12 +30,13 @@ kaggle_download <- function(name, token = NULL) {
 #'   for additional info.
 #' @param split string. 'train' or 'submition'
 #' @param transform function that receives a torch tensor and return another torch tensor, transformed.
+#' @param indexes set of integers for subsampling (e.g. 1:140000)
 #' @param download wether to download or not
 #'
 #' @export
 guess_the_correlation_dataset <- torch::dataset(
   "GuessTheCorrelation",
-  initialize = function(root, token = NULL, split = "train", transform = NULL, download = FALSE) {
+  initialize = function(root, token = NULL, split = "train", transform = NULL, indexes = NULL, download = FALSE) {
 
     self$transform <- transform
     # donwload ----------------------------------------------------------
@@ -58,11 +59,12 @@ guess_the_correlation_dataset <- torch::dataset(
     # variavel resposta -------------------------------------------------
 
     if(split == "train") {
-      self$walker <- readr::read_csv(fs::path(data_path, "train.csv"), col_types = c("cn"))
+      self$images <- readr::read_csv(fs::path(data_path, "train.csv"), col_types = c("cn"))
+      if(!is.null(indexes)) self$images <- self$images[indexes, ]
       self$.path <- file.path(data_path, "train_imgs")
     } else if(split == "submition") {
-      self$walker <- readr::read_csv(fs::path(data_path, "example_submition.csv"), col_types = c("cn"))
-      self$walker$corr <- NA_real_
+      self$images <- readr::read_csv(fs::path(data_path, "example_submition.csv"), col_types = c("cn"))
+      self$images$corr <- NA_real_
       self$.path <- file.path(data_path, "test_imgs")
     }
   },
@@ -71,12 +73,12 @@ guess_the_correlation_dataset <- torch::dataset(
     force(index)
     if(length(index) != 1 || index <= 0) value_error("index should be a single integer greater than zero.")
 
-    sample <- self$walker[index, ]
+    sample <- self$images[index, ]
 
     id <- sample$id
     y <- sample$corr
     x <- torchvision::magick_loader(file.path(self$.path, paste0(sample$id, ".png")))
-    x <- torchvision::transform_to_tensor(x)[1]$unsqueeze(1)
+    x <- torchvision::transform_to_tensor(x) %>% torchvision::transform_rgb_to_grayscale()
 
     if (!is.null(self$transform))
       sample <- self$transform(sample)
@@ -85,6 +87,6 @@ guess_the_correlation_dataset <- torch::dataset(
   },
 
   .length = function() {
-    nrow(self$.walker)
+    nrow(self$images)
   }
 )
